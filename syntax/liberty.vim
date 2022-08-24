@@ -17,7 +17,7 @@ endif
 syn case ignore
 setlocal iskeyword=@,48-57,_
 
-syn keyword     libertyTodo        contained TODO
+syn keyword     libertyTodo        contained TODO XXX FIXME NOTE
 
 " Numbers, all with engineering suffixes and optional units
 "==========================================================
@@ -252,6 +252,31 @@ if version >= 508 || !exists("did_liberty_syntax_inits")
 
   delcommand HiLink
 endif
+
+" Causes all block folds to be opened and closed using z{ and z} respectively.
+"
+
+" from https://github.com/vim-scripts/C-fold
+syn region cBlockFold start="{" end="}" transparent fold
+
+function FoldOnlyMatching(re, op)
+    mark Z
+    normal gg
+    let s:lastline = -1
+    while s:lastline != line('.')
+        if match(getline(line('.')), a:re) != -1
+            exec 'normal ' . a:op
+        endif
+        let s:lastline = line('.')
+        normal zj
+    endwhile
+    normal 'Z
+    unlet s:lastline
+endfunction
+
+nnoremap <silent> z{ :call FoldOnlyMatching('[ \t]*{', 'zo')<CR>
+nnoremap <silent> z} :call FoldOnlyMatching('[ \t]*{', 'zc')<CR>
+
 
 let b:current_syntax = "liberty"
 
